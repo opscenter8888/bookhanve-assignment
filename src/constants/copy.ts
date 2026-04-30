@@ -12,9 +12,6 @@ export const APP_COPY = {
   clearFiltersAction: "Clear filters",
   sortLabel: "Sort books",
   resultsLabel: "results",
-  fallbackNoticeTitle: "Showing local catalog data",
-  fallbackNoticeMessage:
-    "The database is not reachable, so BookHaven is using bundled seed data.",
   retryAction: "Try again",
   previousPage: "Previous",
   nextPage: "Next",
@@ -46,7 +43,7 @@ export const APP_COPY = {
   loadingBooks: "Loading books",
   booksErrorTitle: "Books could not be loaded",
   booksErrorMessage:
-    "Start PostgreSQL and seed the database, or use the bundled fallback data during local development.",
+    "The database is unavailable. Check the PostgreSQL connection and seeded book records.",
   emptyBooksTitle: "No books available",
   emptyBooksMessage: "The catalog is empty. Seed the database to add books.",
   noMatchingBooksTitle: "No books match your search",

@@ -1,6 +1,6 @@
 # BookHaven - Online Book Shop Code Test
 
-BookHaven is a responsive online book shop built for the coding test requirements. It uses a real PostgreSQL data model, JSON seed data, a polished catalog experience, centralized cart state, and exactly 11 behavior-focused Jest tests.
+BookHaven is a responsive online book shop built for the coding test requirements. It uses a real PostgreSQL-backed data layer, JSON-to-database seed scripts, a polished catalog experience, centralized cart state, and exactly 11 behavior-focused Jest tests.
 
 ## Requirement Status
 
@@ -12,7 +12,7 @@ BookHaven is a responsive online book shop built for the coding test requirement
 | Cart persistence | Done | Cart persists with `localStorage`. |
 | Light responsive UI | Done | White background, responsive grid, mobile-friendly controls, subtle transitions. |
 | Loading states | Done | App loading state includes a book-card skeleton grid. |
-| Error states | Done | Friendly error/fallback states avoid raw technical errors. |
+| Error states | Done | Friendly error states avoid raw technical errors when the database is unavailable. |
 | Reusable components | Done | UI primitives, book components, cart components, and feature modules are separated. |
 | Constants folder | Done | User-facing copy, routes, and catalog config live under `src/constants`. |
 | TypeScript | Done | Strict TypeScript is enabled. |
@@ -81,13 +81,13 @@ postgres://bookhaven:bookhaven@localhost:5432/bookhaven
 
 Supabase is PostgreSQL under the hood. This project does not need `@supabase/supabase-js` unless auth, storage, or realtime features are added later.
 
-Set `.env.local`:
+Set `.env.local` without wrapping quotes in hosted environment dashboards:
 
 ```bash
-DATABASE_URL="postgres://..."
+DATABASE_URL=postgres://...
 ```
 
-Use the Supabase **Direct > Connection string** tab. If the direct `db.[project-ref].supabase.co` host does not resolve, use the **Session pooler** or **Transaction pooler** connection string from Supabase instead.
+Use the Supabase **Direct > Connection string** tab. If the direct `db.[project-ref].supabase.co` host does not resolve, use the **Session pooler** or **Transaction pooler** connection string from Supabase instead. On Vercel, set `DATABASE_URL` for Production and Preview, include `sslmode=require` when Supabase requires SSL, and redeploy after changing the variable.
 
 Then run:
 
@@ -122,24 +122,26 @@ src/
     cart/
   hooks/
   lib/
+  server/
   constants/
   types/
 ```
 
-- `src/app` owns routes and page composition.
+- `src/app` owns routes, page composition, and API route handlers.
 - `src/components/ui` owns reusable Button, Card, Container, Header, Toast, LoadingState, ErrorState, and EmptyState primitives.
 - `src/components/book` owns BookCard, BookGrid, and BookGridSkeleton.
-- `src/features/books` owns catalog data loading, search, sorting, pagination, and catalog controls.
+- `src/features/books` owns catalog UI state, API response types, search, sorting, pagination, and catalog controls.
 - `src/features/cart` owns Zustand state and cart UI.
-- `src/lib` owns database, seed fallback, and formatting helpers.
+- `src/lib` owns shared formatting helpers.
+- `src/server` owns PostgreSQL pool setup and DB-backed catalog queries.
 - `src/constants` centralizes copy, routes, and catalog configuration.
 - `src/types` contains shared Book and cart types.
 
 ## Database And Data Flow
 
-Book records live in `database/seed/books.json`. The seed script inserts those JSON records into PostgreSQL. The homepage fetches books from the server-side data layer through `pg`.
+Book records are served through `/api/books`, a Next.js Route Handler that queries PostgreSQL through the server-side data layer and direct `pg` calls. `database/seed/books.json` is only an input for `npm run db:seed`; it is not used as runtime catalog data.
 
-If the database is unavailable, the app falls back to the same JSON seed source and shows a friendly fallback notice. This keeps review smooth while still supporting real database integration.
+The homepage UI fetches `/api/books` from the browser and requires a reachable PostgreSQL database behind that API. If the database is unavailable, the app shows a friendly error state instead of substituting bundled mock data.
 
 ## Catalog Behavior
 
@@ -151,6 +153,52 @@ The homepage supports:
 - Sorting with `sort=newest`, `sort=price-asc`, `sort=price-desc`, or `sort=title-asc`.
 - Pagination with `page`.
 - A fixed page size of 6 books.
+
+Search, sorting, and pagination are executed in SQL using `WHERE`, whitelisted `ORDER BY`, `LIMIT`, and `OFFSET` clauses.
+
+### API Contract
+
+`GET /api/books` returns:
+
+```json
+{
+  "data": {
+    "books": []
+  },
+  "meta": {
+    "query": "",
+    "sort": "newest",
+    "currentPage": 1,
+    "totalPages": 1,
+    "totalItems": 0,
+    "hasPreviousPage": false,
+    "hasNextPage": false
+  }
+}
+```
+
+Database failures return `503`:
+
+```json
+{
+  "error": {
+    "code": "DATABASE_UNAVAILABLE",
+    "message": "The database is unavailable. Check the PostgreSQL connection and seeded book records."
+  }
+}
+```
+
+`GET /api/health` returns `200` with `{ "data": { "status": "ok" } }` when PostgreSQL is reachable, or the same `503` error shape when it is not.
+
+API examples:
+
+```text
+/api/books
+/api/books?q=react&page=1&sort=title-asc
+/api/books?page=2
+/api/books?sort=price-asc
+/api/health
+```
 
 Examples:
 
@@ -191,7 +239,7 @@ npm test
 The suite intentionally contains exactly 11 tests covering:
 
 - cart add/remove/totals/persistence
-- catalog search/sort/pagination helpers
+- catalog API routes, health check, URL parsing, and view-model helpers
 - BookCard rendering and add feedback
 - cart badge/cart summary behavior
 - loading/error accessibility roles
@@ -214,7 +262,7 @@ Codex was used to scaffold, implement, review, and refine the project. The repos
 
 - Direct `pg` access is used instead of an ORM to keep the data layer transparent.
 - Zustand is used because cart state is small and client-focused.
-- Catalog filtering, sorting, and pagination run in app code so PostgreSQL and JSON fallback behave identically.
+- Catalog filtering, sorting, and pagination run in PostgreSQL to keep the production path database-backed.
 - Prices are stored as integer cents to avoid floating point currency issues.
 - Quantity can increase from the catalog or through cart controls; decrementing the final unit removes the item.
 - Checkout, auth, payments, and admin tools are intentionally out of scope.
@@ -223,7 +271,5 @@ Codex was used to scaffold, implement, review, and refine the project. The repos
 ## Future Improvements
 
 - Checkout flow.
-- Server-side database pagination for very large catalogs.
 - Better cover asset management.
 - End-to-end browser tests.
-- Deployment documentation.

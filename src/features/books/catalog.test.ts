@@ -1,8 +1,10 @@
 import {
+  buildCatalogApiResponse,
   buildCatalogViewModel,
-  filterBooks,
-  sortBooks,
-  type SortKey
+  buildCatalogViewModelFromApiResponse,
+  normalizeQuery,
+  parsePage,
+  parseSort
 } from "@/features/books/catalog";
 import type { Book } from "@/types/book";
 
@@ -39,43 +41,27 @@ const books: Book[] = [
   }
 ];
 
-test("filters books by title or author", () => {
-  expect(filterBooks(books, "backend").map((book) => book.id)).toEqual([
-    "systems"
-  ]);
-  expect(filterBooks(books, "react").map((book) => book.id)).toEqual(["react"]);
-});
+test("normalizes catalog params and maps API response view model", () => {
+  expect(normalizeQuery("  react  ")).toBe("react");
+  expect(normalizeQuery(["backend", "ignored"])).toBe("backend");
+  expect(parseSort("price-asc")).toBe("price-asc");
+  expect(parseSort("invalid")).toBe("newest");
+  expect(parsePage("2")).toBe(2);
+  expect(parsePage("0")).toBe(1);
 
-test("sorts books by price, title, and newest date", () => {
-  const sortedIds = (sort: SortKey) =>
-    sortBooks(books, sort).map((book) => book.id);
+  const viewModel = buildCatalogViewModel({
+    books,
+    currentPage: 1,
+    query: "react",
+    sort: "newest",
+    totalItems: 9,
+    totalPages: 2
+  });
+  const apiResponse = buildCatalogApiResponse(viewModel);
 
-  expect(sortedIds("price-asc")).toEqual(["systems", "product", "react"]);
-  expect(sortedIds("price-desc")).toEqual(["react", "product", "systems"]);
-  expect(sortedIds("title-asc")).toEqual(["product", "react", "systems"]);
-  expect(sortedIds("newest")).toEqual(["systems", "react", "product"]);
-});
-
-test("paginates and clamps invalid page values", () => {
-  const manyBooks = Array.from({ length: 10 }, (_, index) => ({
-    ...books[index % books.length],
-    id: `book-${index}`,
-    title: `Book ${index}`
-  }));
-
-  const viewModel = buildCatalogViewModel(manyBooks, { page: "2" });
-  const clampedViewModel = buildCatalogViewModel(manyBooks, { page: "99" });
-
-  expect(viewModel.books).toHaveLength(4);
-  expect(viewModel.currentPage).toBe(2);
-  expect(viewModel.totalPages).toBe(2);
-  expect(clampedViewModel.currentPage).toBe(2);
-});
-
-test("returns an empty view model when no books match search", () => {
-  const viewModel = buildCatalogViewModel(books, { q: "missing" });
-
-  expect(viewModel.books).toEqual([]);
-  expect(viewModel.totalItems).toBe(0);
-  expect(viewModel.currentPage).toBe(1);
+  expect(buildCatalogViewModelFromApiResponse(apiResponse)).toEqual(viewModel);
+  expect(apiResponse.data.books).toHaveLength(3);
+  expect(apiResponse.meta.totalPages).toBe(2);
+  expect(viewModel.hasPreviousPage).toBe(false);
+  expect(viewModel.hasNextPage).toBe(true);
 });
