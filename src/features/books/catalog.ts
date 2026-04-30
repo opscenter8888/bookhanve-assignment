@@ -20,6 +20,10 @@ export type CatalogViewModel = {
   hasNextPage: boolean;
 };
 
+export type CatalogApiResponse = {
+  catalog: CatalogViewModel;
+};
+
 function getSingleValue(value: string | string[] | undefined): string {
   if (Array.isArray(value)) {
     return value[0] ?? "";

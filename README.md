@@ -126,7 +126,7 @@ src/
   types/
 ```
 
-- `src/app` owns routes and page composition.
+- `src/app` owns routes, page composition, and the `/api/books` route handler.
 - `src/components/ui` owns reusable Button, Card, Container, Header, Toast, LoadingState, ErrorState, and EmptyState primitives.
 - `src/components/book` owns BookCard, BookGrid, and BookGridSkeleton.
 - `src/features/books` owns catalog data loading, search, sorting, pagination, and catalog controls.
@@ -137,9 +137,9 @@ src/
 
 ## Database And Data Flow
 
-Book records are served from PostgreSQL through the server-side data layer and direct `pg` queries. `database/seed/books.json` is only an input for `npm run db:seed`; it is not used as runtime catalog data.
+Book records are served through `/api/books`, a Next.js Route Handler that queries PostgreSQL through the server-side data layer and direct `pg` calls. `database/seed/books.json` is only an input for `npm run db:seed`; it is not used as runtime catalog data.
 
-The homepage is rendered dynamically and requires a reachable PostgreSQL database. If the database is unavailable, the app shows a friendly error state instead of substituting bundled mock data.
+The homepage UI fetches `/api/books` from the browser and requires a reachable PostgreSQL database behind that API. If the database is unavailable, the app shows a friendly error state instead of substituting bundled mock data.
 
 ## Catalog Behavior
 
@@ -153,6 +153,15 @@ The homepage supports:
 - A fixed page size of 6 books.
 
 Search, sorting, and pagination are executed in SQL using `WHERE`, whitelisted `ORDER BY`, `LIMIT`, and `OFFSET` clauses.
+
+API examples:
+
+```text
+/api/books
+/api/books?q=react&page=1&sort=title-asc
+/api/books?page=2
+/api/books?sort=price-asc
+```
 
 Examples:
 

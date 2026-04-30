@@ -1,22 +1,12 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { BookGridSkeleton } from "@/components/book/BookGridSkeleton";
 import { Container } from "@/components/ui/Container";
-import { ErrorState } from "@/components/ui/ErrorState";
 import { APP_COPY } from "@/constants/copy";
 import { ROUTES } from "@/constants/routes";
 import { BookCatalog } from "@/features/books/BookCatalog";
-import type { CatalogParams } from "@/features/books/catalog";
-import { getCatalog } from "@/features/books/data";
 
-export const dynamic = "force-dynamic";
-
-type HomePageProps = {
-  searchParams?: Promise<CatalogParams>;
-};
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const params = (await searchParams) ?? {};
-  const viewModel = await getCatalog(params);
-
+export default function HomePage() {
   return (
     <main>
       <Container className="py-10 sm:py-14">
@@ -39,11 +29,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             {APP_COPY.cartLink}
           </Link>
         </section>
-        {viewModel.totalItems > 0 || viewModel.query ? (
-          <BookCatalog viewModel={viewModel} />
-        ) : (
-          <ErrorState title={APP_COPY.emptyBooksTitle} message={APP_COPY.emptyBooksMessage} />
-        )}
+        <Suspense fallback={<BookGridSkeleton />}>
+          <BookCatalog />
+        </Suspense>
       </Container>
     </main>
   );
