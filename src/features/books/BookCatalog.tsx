@@ -131,7 +131,9 @@ export function BookCatalog() {
         hasPreviousPage={viewModel.hasPreviousPage}
         query={viewModel.query}
         sort={viewModel.sort}
+        totalItems={viewModel.totalItems}
         totalPages={viewModel.totalPages}
+        visibleCount={viewModel.books.length}
       />
     </div>
   );

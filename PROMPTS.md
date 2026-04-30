@@ -145,6 +145,34 @@ Add exactly 11 Jest tests for BookHaven.
 
 Summarize test files, the 11 scenarios covered, and test command output.
 
+## Admin CRUD Prompt
+
+### Goal
+
+Extend BookHaven with production-oriented admin catalog management.
+
+### Constraints
+
+- Use username/password login backed by `admin_users`.
+- Use signed HttpOnly session cookies, not JWT or browser-exposed API keys.
+- Keep shopper APIs and cart behavior unchanged.
+- Keep admin search, sorting, and pagination server-side.
+- Use confirmation dialogs and toast feedback for admin write/logout actions.
+- Do not add upload storage, payments, role management, or a new auth library.
+- Keep the final Jest suite at exactly 11 tests.
+
+### Done When
+
+- `/admin/login` and `/admin` work responsively.
+- Admin create/edit/delete APIs are protected and validated.
+- Optional book fields are generated/defaulted when blank.
+- Audit writes cover login success/failure, logout, create, update, and delete.
+- README and architecture docs describe setup, session auth, and audit scope.
+
+### Output Expected
+
+Summarize admin routes, schema changes, session behavior, UI behavior, tests, and verification results.
+
 ## Self-Review Prompt
 
 ### Goal

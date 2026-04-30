@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/ui/Header";
 import { ToastProvider } from "@/components/ui/Toast";
 import { APP_COPY } from "@/constants/copy";
 import "./globals.css";
@@ -18,7 +17,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <ToastProvider>
-          <Header />
           {children}
         </ToastProvider>
       </body>

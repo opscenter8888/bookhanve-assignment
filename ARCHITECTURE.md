@@ -1,128 +1,91 @@
-# BookHaven Intended Architecture
+# BookHaven Architecture
 
-This document describes the implemented architecture and intended boundaries for future changes.
+This document describes the current architecture and ownership boundaries for BookHaven.
 
 ## Overview
 
-BookHaven uses a small production-style architecture based on Next.js App Router, feature folders, reusable UI primitives, centralized cart state, a PostgreSQL data layer, constants, shared types, and focused tests.
+BookHaven uses Next.js App Router, TypeScript, Tailwind CSS, feature folders, reusable UI primitives, centralized cart state, signed-cookie admin sessions, and PostgreSQL-backed data access. Runtime catalog data comes from the database; seed JSON is only used by the seed script.
 
-## Next.js App Router
+## Routes
 
-The `src/app` layer will own routing, layouts, and page composition. Page files should compose feature modules and shared components rather than containing business logic.
+- `/` renders the public book catalog.
+- `/cart` renders the shopper cart.
+- `/admin/login` renders the admin username/password login.
+- `/admin` renders the protected admin catalog dashboard.
+- `/api/books` serves the public catalog with `data.books` and `meta`.
+- `/api/health` checks database availability.
+- `/api/admin/session` handles admin login/logout.
+- `/api/admin/books` and `/api/admin/books/[id]` handle protected admin CRUD.
+- `/api/admin/audit-logs` exposes protected backend audit records for operational use.
 
-Planned routes:
+The public shop routes live under the `(shop)` route group so the shopper header stays out of the admin dashboard.
 
-- `/` for the homepage book grid.
-- `/cart` for cart contents and totals.
+## Feature Boundaries
 
-## Feature-Based Folders
+- `src/app` owns routes, layouts, and API route handlers.
+- `src/components/ui` owns generic primitives such as Button, Card, Container, Header, Toast, LoadingState, ErrorState, and EmptyState.
+- `src/components/book` owns reusable book display and catalog control components.
+- `src/features/books` owns public catalog UI state, query parsing, sorting, pagination, and view models.
+- `src/features/cart` owns Zustand cart state, selectors, persistence, and cart UI.
+- `src/features/admin` owns admin login/dashboard UI and admin API types/validation helpers.
+- `src/server` owns server-only PostgreSQL access, admin auth helpers, password hashing, sessions, and audit writes.
+- `src/constants` owns user-facing copy, routes, and shared behavior/config values.
+- `src/types` owns shared domain types.
 
-Feature folders will group behavior by domain:
+## Admin Auth
 
-- `features/books` for book data loading and book-specific feature logic.
-- `features/books` also owns catalog search, sorting, pagination, and homepage catalog controls.
-- `features/cart` for cart state, actions, selectors, and cart-specific UI behavior.
+Admin authentication uses `admin_users` in PostgreSQL. Passwords are hashed with Node `crypto.scrypt`; no auth library or JWT is used.
 
-This keeps domain logic separate from route files and generic UI components.
-
-## Reusable UI Components
-
-The `components/ui` layer will contain generic primitives:
-
-- Button.
-- Card.
-- Container.
-- LoadingState.
-- ErrorState.
-- EmptyState.
-- Header.
-- Toast.
-
-These components should stay domain-agnostic.
-
-## Book Components
-
-The `components/book` layer will contain reusable book display components:
-
-- BookCard.
-- BookGrid.
-- BookGridSkeleton.
-
-These components may receive event handlers from features or pages, but should not own cart business logic.
-
-## Centralized Cart Store
-
-The cart will use Zustand. The cart store should own:
-
-- Cart items.
-- Add item action.
-- Remove item action.
-- Quantity updates.
-- Total item count.
-- Total price.
-- Clear cart action.
-- localStorage persistence.
-
-Components should call store actions rather than reimplementing cart logic.
-
-## Database Access Layer
-
-The database layer will use PostgreSQL through Docker. A small data access module in `src/lib` should hide connection details and expose simple query helpers.
-
-Planned database assets:
-
-- Docker Compose PostgreSQL service.
-- Books table schema.
-- JSON seed data.
-- Seed script.
-
-An ORM is not planned unless requirements change.
-
-## Constants Layer
-
-The `src/constants` layer will own:
-
-- User-facing strings.
-- Route labels and paths.
-- Shared app metadata.
-- Reusable display config.
-
-Components should not hardcode repeated UI copy.
-
-## Types Layer
-
-The `src/types` layer will own cross-feature types. Feature-specific types should stay in their feature folder unless shared elsewhere.
-
-Planned shared domain types include:
-
-- Book.
-- Cart item.
-- Money or price-related display shape if needed.
-
-## Testing Layer
-
-Testing will use Jest and React Testing Library. The final suite must contain exactly 11 tests focused on cart logic and key component behavior.
-
-## Planned Folder Tree
-
-This tree is the intended implemented structure.
+Successful login creates a signed HttpOnly cookie:
 
 ```text
-src/
-  app/
-    cart/
-    globals.css
-    layout.tsx
-    page.tsx
-  components/
-    ui/
-    book/
-  features/
-    books/
-    cart/
-  hooks/
-  lib/
-  constants/
-  types/
-test/
+bookhaven_admin_session=adminId:expiresAt:signature
 ```
+
+Session cookies use `SameSite=Lax`, `path=/`, an 8-hour max age, and `Secure` in production. Rotating `ADMIN_SESSION_SECRET` invalidates existing sessions.
+
+## Admin CRUD
+
+Admin book management is protected by the session cookie. Create/edit flows use modals, action confirmation dialogs, and toast feedback. Only title and price are required for create; SKU, author, description, and cover URL are generated/defaulted server-side when blank.
+
+Admin list behavior is backend-driven:
+
+- `page` controls pagination.
+- `q` searches title, author, and SKU.
+- `sort` supports newest, price ascending, price descending, and title ascending.
+
+The admin UI does not fetch all rows and sort/page in the browser.
+
+## Audit Logging
+
+`admin_audit_logs` records login success, login failure, logout, book create, book update, and book delete. The dashboard does not render an audit panel in v1, but the protected audit API remains available for backend/ops inspection.
+
+Read/list actions are not logged to avoid noisy records.
+
+## Cart State
+
+The cart uses Zustand with localStorage persistence. It owns:
+
+- Cart items.
+- Add item.
+- Remove item.
+- Quantity increase/decrease.
+- Total item count.
+- Total price.
+- Clear cart.
+
+Server catalog data and client cart state remain separate.
+
+## Database
+
+PostgreSQL is accessed directly through `pg`. The schema includes:
+
+- `books`
+- `admin_users`
+- `admin_audit_logs`
+
+The database layer stays server-only. Browser code never receives database credentials or admin secrets.
+
+## Testing
+
+Jest and React Testing Library cover API behavior, cart logic, catalog helpers, and key UI behavior. The suite intentionally remains exactly 11 tests.

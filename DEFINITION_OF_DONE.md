@@ -22,13 +22,19 @@ This document defines the acceptance criteria for the completed coding test and 
 - [ ] Cart total price is correct.
 - [ ] Cart state persists through localStorage.
 - [ ] Empty cart state is handled clearly.
+- [ ] Admin login uses username/password and a signed HttpOnly session cookie.
+- [ ] Admin CRUD can create, edit, delete, search, sort, and page books server-side.
+- [ ] Admin create requires only title and price; generated/default fields remain editable.
+- [ ] Admin write actions use confirmation dialogs and success/failure toasts.
 
 ## Database Criteria
 
 - [ ] PostgreSQL runs through Docker.
 - [ ] Database schema includes a `books` table.
+- [ ] Database schema includes `admin_users` and `admin_audit_logs`.
 - [ ] Seed data comes from JSON.
 - [ ] Database can be seeded with documented commands.
+- [ ] Bootstrap admin can be seeded with documented commands.
 - [ ] JSON seed data contains at least 20 realistic book records.
 - [ ] Database setup is explained in README.
 
@@ -39,6 +45,7 @@ This document defines the acceptance criteria for the completed coding test and 
 - [ ] Reusable UI primitives are used consistently.
 - [ ] Loading, error, and empty states are covered.
 - [ ] Text does not overflow cards, buttons, or page sections.
+- [ ] Admin dashboard uses compact responsive table/cards and non-clipped modals.
 
 ## Code Quality Criteria
 
@@ -48,6 +55,7 @@ This document defines the acceptance criteria for the completed coding test and 
 - [ ] Feature logic is separated from route composition.
 - [ ] No unnecessary libraries are added.
 - [ ] No overengineered abstractions are added.
+- [ ] No unused functions, variables, folders, or stale copy constants remain.
 
 ## Documentation Criteria
 
@@ -57,7 +65,7 @@ This document defines the acceptance criteria for the completed coding test and 
 - [ ] README explains architecture decisions.
 - [ ] README includes LLM usage.
 - [ ] README documents tradeoffs and future improvements.
-- [ ] README explains LLM usage and git submission expectations.
+- [ ] README documents admin setup, session-cookie auth, and audit scope.
 
 ## Accessibility Criteria
 
