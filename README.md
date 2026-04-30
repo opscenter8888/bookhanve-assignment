@@ -1,6 +1,6 @@
 # BookHaven - Online Book Shop Code Test
 
-BookHaven is a responsive online book shop built for the coding test requirements. It uses a real PostgreSQL data model, JSON seed data, a polished catalog experience, centralized cart state, and exactly 11 behavior-focused Jest tests.
+BookHaven is a responsive online book shop built for the coding test requirements. It uses a real PostgreSQL-backed data layer, JSON-to-database seed scripts, a polished catalog experience, centralized cart state, and exactly 11 behavior-focused Jest tests.
 
 ## Requirement Status
 
@@ -12,7 +12,7 @@ BookHaven is a responsive online book shop built for the coding test requirement
 | Cart persistence | Done | Cart persists with `localStorage`. |
 | Light responsive UI | Done | White background, responsive grid, mobile-friendly controls, subtle transitions. |
 | Loading states | Done | App loading state includes a book-card skeleton grid. |
-| Error states | Done | Friendly error/fallback states avoid raw technical errors. |
+| Error states | Done | Friendly error states avoid raw technical errors when the database is unavailable. |
 | Reusable components | Done | UI primitives, book components, cart components, and feature modules are separated. |
 | Constants folder | Done | User-facing copy, routes, and catalog config live under `src/constants`. |
 | TypeScript | Done | Strict TypeScript is enabled. |
@@ -131,15 +131,15 @@ src/
 - `src/components/book` owns BookCard, BookGrid, and BookGridSkeleton.
 - `src/features/books` owns catalog data loading, search, sorting, pagination, and catalog controls.
 - `src/features/cart` owns Zustand state and cart UI.
-- `src/lib` owns database, seed fallback, and formatting helpers.
+- `src/lib` owns database and formatting helpers.
 - `src/constants` centralizes copy, routes, and catalog configuration.
 - `src/types` contains shared Book and cart types.
 
 ## Database And Data Flow
 
-Book records live in `database/seed/books.json`. The seed script inserts those JSON records into PostgreSQL. The homepage fetches books from the server-side data layer through `pg`.
+Book records are served from PostgreSQL through the server-side data layer and direct `pg` queries. `database/seed/books.json` is only an input for `npm run db:seed`; it is not used as runtime catalog data.
 
-If the database is unavailable, the app falls back to the same JSON seed source and shows a friendly fallback notice. This keeps review smooth while still supporting real database integration.
+The homepage is rendered dynamically and requires a reachable PostgreSQL database. If the database is unavailable, the app shows a friendly error state instead of substituting bundled mock data.
 
 ## Catalog Behavior
 
@@ -151,6 +151,8 @@ The homepage supports:
 - Sorting with `sort=newest`, `sort=price-asc`, `sort=price-desc`, or `sort=title-asc`.
 - Pagination with `page`.
 - A fixed page size of 6 books.
+
+Search, sorting, and pagination are executed in SQL using `WHERE`, whitelisted `ORDER BY`, `LIMIT`, and `OFFSET` clauses.
 
 Examples:
 
@@ -191,7 +193,7 @@ npm test
 The suite intentionally contains exactly 11 tests covering:
 
 - cart add/remove/totals/persistence
-- catalog search/sort/pagination helpers
+- catalog URL parsing and view-model helpers
 - BookCard rendering and add feedback
 - cart badge/cart summary behavior
 - loading/error accessibility roles
@@ -214,7 +216,7 @@ Codex was used to scaffold, implement, review, and refine the project. The repos
 
 - Direct `pg` access is used instead of an ORM to keep the data layer transparent.
 - Zustand is used because cart state is small and client-focused.
-- Catalog filtering, sorting, and pagination run in app code so PostgreSQL and JSON fallback behave identically.
+- Catalog filtering, sorting, and pagination run in PostgreSQL to keep the production path database-backed.
 - Prices are stored as integer cents to avoid floating point currency issues.
 - Quantity can increase from the catalog or through cart controls; decrementing the final unit removes the item.
 - Checkout, auth, payments, and admin tools are intentionally out of scope.

@@ -1,8 +1,8 @@
 import {
   buildCatalogViewModel,
-  filterBooks,
-  sortBooks,
-  type SortKey
+  normalizeQuery,
+  parsePage,
+  parseSort
 } from "@/features/books/catalog";
 import type { Book } from "@/types/book";
 
@@ -39,43 +39,48 @@ const books: Book[] = [
   }
 ];
 
-test("filters books by title or author", () => {
-  expect(filterBooks(books, "backend").map((book) => book.id)).toEqual([
-    "systems"
-  ]);
-  expect(filterBooks(books, "react").map((book) => book.id)).toEqual(["react"]);
+test("normalizes catalog query params", () => {
+  expect(normalizeQuery("  react  ")).toBe("react");
+  expect(normalizeQuery(["backend", "ignored"])).toBe("backend");
 });
 
-test("sorts books by price, title, and newest date", () => {
-  const sortedIds = (sort: SortKey) =>
-    sortBooks(books, sort).map((book) => book.id);
-
-  expect(sortedIds("price-asc")).toEqual(["systems", "product", "react"]);
-  expect(sortedIds("price-desc")).toEqual(["react", "product", "systems"]);
-  expect(sortedIds("title-asc")).toEqual(["product", "react", "systems"]);
-  expect(sortedIds("newest")).toEqual(["systems", "react", "product"]);
+test("parses sort and page params with safe defaults", () => {
+  expect(parseSort("price-asc")).toBe("price-asc");
+  expect(parseSort("invalid")).toBe("newest");
+  expect(parsePage("2")).toBe(2);
+  expect(parsePage("0")).toBe(1);
 });
 
-test("paginates and clamps invalid page values", () => {
-  const manyBooks = Array.from({ length: 10 }, (_, index) => ({
-    ...books[index % books.length],
-    id: `book-${index}`,
-    title: `Book ${index}`
-  }));
+test("builds catalog view model from database page results", () => {
+  const viewModel = buildCatalogViewModel({
+    books,
+    currentPage: 1,
+    query: "",
+    sort: "newest",
+    totalItems: 9,
+    totalPages: 2
+  });
 
-  const viewModel = buildCatalogViewModel(manyBooks, { page: "2" });
-  const clampedViewModel = buildCatalogViewModel(manyBooks, { page: "99" });
-
-  expect(viewModel.books).toHaveLength(4);
-  expect(viewModel.currentPage).toBe(2);
+  expect(viewModel.books).toHaveLength(3);
+  expect(viewModel.currentPage).toBe(1);
   expect(viewModel.totalPages).toBe(2);
-  expect(clampedViewModel.currentPage).toBe(2);
+  expect(viewModel.hasPreviousPage).toBe(false);
+  expect(viewModel.hasNextPage).toBe(true);
 });
 
-test("returns an empty view model when no books match search", () => {
-  const viewModel = buildCatalogViewModel(books, { q: "missing" });
+test("builds empty catalog view model for database searches with no matches", () => {
+  const viewModel = buildCatalogViewModel({
+    books: [],
+    currentPage: 1,
+    query: "missing",
+    sort: "title-asc",
+    totalItems: 0,
+    totalPages: 1
+  });
 
   expect(viewModel.books).toEqual([]);
   expect(viewModel.totalItems).toBe(0);
   expect(viewModel.currentPage).toBe(1);
+  expect(viewModel.hasPreviousPage).toBe(false);
+  expect(viewModel.hasNextPage).toBe(false);
 });
