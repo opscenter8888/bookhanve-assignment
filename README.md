@@ -19,7 +19,8 @@ BookHaven is a responsive online book shop built for the coding test requirement
 | Jest tests | Done | Exactly 11 tests. |
 | Database integration | Done | PostgreSQL via Docker by default; Supabase works through `DATABASE_URL`. |
 | JSON into database | Done | `database/seed/books.json` is inserted/upserted by `npm run db:seed`. |
-| Commit history | Done | Repository history is squashed into one commit and pushed to `origin/main`. |
+| Admin CRUD | Done | `/admin` supports username/password login, modal book CRUD, confirmation dialogs, and toast feedback. Admin writes are audited in the database. |
+| Commit history | Done | Changes are kept in focused commits and can be merged into `main` after verification. |
 
 ## Stack
 
@@ -71,6 +72,12 @@ Seed books from JSON:
 npm run db:seed
 ```
 
+Create the first local admin user:
+
+```bash
+npm run db:admin
+```
+
 Default local database URL:
 
 ```text
@@ -94,9 +101,34 @@ Then run:
 ```bash
 npm run db:schema
 npm run db:seed
+npm run db:admin
 ```
 
-The schema script creates the `books` table. The seed script reads `database/seed/books.json` and upserts 20 book records into the database.
+The schema script creates the `books`, `admin_users`, and `admin_audit_logs` tables. The seed script reads `database/seed/books.json` and upserts 20 book records into the database.
+
+## Admin Setup
+
+The admin site is available directly at `/admin`. It is intentionally not linked from the shopper navigation.
+
+Local development defaults:
+
+```text
+ADMIN_BOOTSTRAP_USERNAME=admin
+ADMIN_BOOTSTRAP_PASSWORD=bookhaven-admin
+ADMIN_SESSION_SECRET=bookhaven-admin-session-secret
+```
+
+Production must set explicit values for:
+
+```text
+ADMIN_BOOTSTRAP_USERNAME
+ADMIN_BOOTSTRAP_PASSWORD
+ADMIN_SESSION_SECRET
+```
+
+Run `npm run db:schema` before `npm run db:admin`. The admin bootstrap command creates the first admin user only when the username does not already exist. Passwords are hashed with Node `crypto.scrypt`; raw passwords are never stored.
+
+Admin sessions use a signed HttpOnly cookie instead of JWT. This keeps the browser flow simple, avoids localStorage tokens, and supports invalidating sessions by rotating `ADMIN_SESSION_SECRET`.
 
 ## Commands
 
@@ -106,6 +138,7 @@ npm run build
 npm run lint
 npm test
 npm run db:schema
+npm run db:admin
 npm run db:seed
 ```
 
@@ -114,10 +147,14 @@ npm run db:seed
 ```text
 src/
   app/
+    (shop)/
+    admin/
+    api/
   components/
     ui/
     book/
   features/
+    admin/
     books/
     cart/
   hooks/
@@ -129,11 +166,12 @@ src/
 
 - `src/app` owns routes, page composition, and API route handlers.
 - `src/components/ui` owns reusable Button, Card, Container, Header, Toast, LoadingState, ErrorState, and EmptyState primitives.
-- `src/components/book` owns BookCard, BookGrid, and BookGridSkeleton.
+- `src/components/book` owns BookCard, BookGrid, BookGridSkeleton, and shared catalog controls.
+- `src/features/admin` owns admin dashboard UI, login UI, and admin API types.
 - `src/features/books` owns catalog UI state, API response types, search, sorting, pagination, and catalog controls.
 - `src/features/cart` owns Zustand state and cart UI.
 - `src/lib` owns shared formatting helpers.
-- `src/server` owns PostgreSQL pool setup and DB-backed catalog queries.
+- `src/server` owns PostgreSQL pool setup, DB-backed catalog queries, admin sessions, password hashing, and audit writes.
 - `src/constants` centralizes copy, routes, and catalog configuration.
 - `src/types` contains shared Book and cart types.
 
@@ -142,6 +180,8 @@ src/
 Book records are served through `/api/books`, a Next.js Route Handler that queries PostgreSQL through the server-side data layer and direct `pg` calls. `database/seed/books.json` is only an input for `npm run db:seed`; it is not used as runtime catalog data.
 
 The homepage UI fetches `/api/books` from the browser and requires a reachable PostgreSQL database behind that API. If the database is unavailable, the app shows a friendly error state instead of substituting bundled mock data.
+
+Admin writes use the same `books` table as the public catalog. The `books` table includes `created_by` and `updated_by` audit columns, while detailed actions are written to `admin_audit_logs`.
 
 ## Catalog Behavior
 
@@ -228,6 +268,23 @@ Shopping actions provide lightweight feedback:
 - Header cart badge updates immediately.
 - Empty cart state includes a clear CTA back to the homepage.
 
+## Admin Behavior
+
+The admin dashboard supports:
+
+- Username/password login at `/admin/login`.
+- Signed HttpOnly session cookies with an 8-hour max age.
+- Modal-based book creation with only title and price required.
+- Generated SKU, default author, default description, and default cover image when optional fields are blank.
+- Book detail modal for editing all book fields.
+- Server-side admin search, sorting, and pagination through `/api/admin/books`.
+- Custom confirmation dialogs before save, delete, and logout actions.
+- Toast feedback for success and failure states.
+- Hard delete for books.
+- Audit log entries for login success, login failure, logout, create, update, and delete.
+
+Admin APIs live under `/api/admin/*`. Unsafe methods check same-origin requests because authentication is cookie-based. Audit logs are stored and exposed through a protected backend API, but there is no audit log panel in the admin UI.
+
 ## Testing
 
 Run:
@@ -239,7 +296,9 @@ npm test
 The suite intentionally contains exactly 11 tests covering:
 
 - cart add/remove/totals/persistence
-- catalog API routes, health check, URL parsing, and view-model helpers
+- public catalog API response shape
+- admin login, cookie behavior, authorization, validation, CRUD, and audit writes
+- URL parsing and public catalog view-model helpers
 - BookCard rendering and add feedback
 - cart badge/cart summary behavior
 - loading/error accessibility roles
@@ -263,13 +322,15 @@ Codex was used to scaffold, implement, review, and refine the project. The repos
 - Direct `pg` access is used instead of an ORM to keep the data layer transparent.
 - Zustand is used because cart state is small and client-focused.
 - Catalog filtering, sorting, and pagination run in PostgreSQL to keep the production path database-backed.
+- Admin auth uses a signed HttpOnly session cookie instead of JWT because this is a browser-only admin flow without roles or external API clients.
 - Prices are stored as integer cents to avoid floating point currency issues.
 - Quantity can increase from the catalog or through cart controls; decrementing the final unit removes the item.
-- Checkout, auth, payments, and admin tools are intentionally out of scope.
+- Checkout, payments, upload storage, and admin user management UI are intentionally out of scope.
 - `npm audit` may report dependency advisories; do not run `npm audit fix --force` without reviewing breaking changes.
 
 ## Future Improvements
 
 - Checkout flow.
 - Better cover asset management.
+- Admin user management and role-based permissions.
 - End-to-end browser tests.

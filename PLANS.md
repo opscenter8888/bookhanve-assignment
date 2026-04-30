@@ -242,3 +242,62 @@ Bring the project to submission quality.
 - Claiming unverified behavior.
 - Leaving documentation stale.
 - Missing accessibility basics.
+
+## Phase 10: Admin CRUD
+
+### Goal
+
+Add a production-oriented admin area for direct book management without changing shopper catalog behavior.
+
+### Deliverables
+
+- Username/password admin login backed by `admin_users`.
+- Signed HttpOnly session cookie.
+- Admin bootstrap script.
+- Protected admin book CRUD APIs.
+- Admin audit writes for login/logout/create/update/delete.
+- Server-side admin search, sorting, and pagination.
+- Modal-based create/detail/edit UI.
+
+### Verification Checklist
+
+- Admin APIs reject unauthenticated requests.
+- Public `/api/books` still returns `{ data, meta }`.
+- Admin create defaults optional fields when blank.
+- Duplicate SKU maps to a conflict response.
+- Audit writes are covered by tests.
+
+### Risks
+
+- Exposing admin secrets to browser code.
+- Treating admin search/sort/page as client-only operations.
+- Increasing the test suite above exactly 11 tests.
+
+## Phase 11: Admin And Catalog UI Upgrade
+
+### Goal
+
+Improve admin and shopper UI consistency with shared catalog controls, responsive layouts, and safer admin interactions.
+
+### Deliverables
+
+- Shared catalog toolbar and pagination components.
+- Compact admin dashboard shell.
+- Desktop table and mobile card admin layouts.
+- Responsive create/detail modal.
+- Custom confirmation dialog for admin write/logout actions.
+- Success and failure toast feedback for admin actions.
+
+### Verification Checklist
+
+- Admin modal has one visible cancel button.
+- `Escape` closes the active popup/modal.
+- Delete/save/logout use custom confirmation UI, not browser alerts.
+- Search, sorting, and pagination stay backend-driven.
+- `npm run lint`, `npm run build`, and exactly 11 Jest tests pass.
+
+### Risks
+
+- Leaving stale docs or unused constants after UI changes.
+- Reintroducing horizontal overflow on mobile.
+- Mixing shopper navigation into the admin dashboard.

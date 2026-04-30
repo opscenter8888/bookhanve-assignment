@@ -34,8 +34,8 @@ export function BookCard({ book, onAddToCart }: BookCardProps) {
   }
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-1 hover:shadow-lg">
-      <div className="relative aspect-[4/3] bg-slate-100">
+    <Card className="flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="relative aspect-[3/2] bg-slate-100">
         <Image
           alt={`${book.title} cover`}
           className="object-cover"
@@ -44,26 +44,28 @@ export function BookCard({ book, onAddToCart }: BookCardProps) {
           src={book.coverImageUrl}
         />
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4">
         <div className="flex-1">
-          <p className="text-xs font-semibold uppercase tracking-wide text-brand">
+          <p className="font-mono text-xs font-semibold uppercase text-brand">
             {APP_COPY.skuLabel}: {book.sku}
           </p>
-          <h2 className="mt-2 text-xl font-semibold text-ink">{book.title}</h2>
+          <h2 className="mt-2 line-clamp-2 text-lg font-bold leading-6 text-ink">
+            {book.title}
+          </h2>
           <p className="mt-1 text-sm text-muted">
             {APP_COPY.authorLabel}: {book.author}
           </p>
-          <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">
+          <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
             {book.description}
           </p>
         </div>
-        <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-4">
           <p className="text-lg font-bold text-ink">
             {formatCurrency(book.priceCents)}
           </p>
           <Button
             aria-label={`${APP_COPY.addToCart}: ${book.title}`}
-            className={isAdded ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+            className={`min-h-10 px-3 ${isAdded ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
             onClick={handleAddToCart}
           >
             {isAdded ? APP_COPY.addedToCart : APP_COPY.addToCart}

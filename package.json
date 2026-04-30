@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest",
     "db:schema": "node database/schema.js",
+    "db:admin": "node database/seed/admin.js",
     "db:seed": "node database/seed/seed.js"
   },
   "dependencies": {

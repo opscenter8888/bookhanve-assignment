@@ -28,11 +28,13 @@ These conventions define how BookHaven implementation and future changes should 
 
 - `src/app` owns routes, layouts, and page composition.
 - `src/components/ui` owns generic reusable UI primitives.
-- `src/components/book` owns reusable book display components.
+- `src/components/book` owns reusable book display and catalog control components.
 - `src/features/books` owns book data behavior and feature logic.
 - `src/features/cart` owns cart state and cart-specific behavior.
+- `src/features/admin` owns admin UI, admin API contracts, and admin validation helpers.
 - `src/hooks` owns shared React hooks.
-- `src/lib` owns framework, database, and utility integrations.
+- `src/lib` owns framework and utility integrations.
+- `src/server` owns server-only database, auth, session, password, and audit logic.
 - `src/constants` owns strings, routes, and shared config.
 - `src/types` owns cross-feature TypeScript types.
 
@@ -53,6 +55,17 @@ These conventions define how BookHaven implementation and future changes should 
 - Persist cart state to localStorage.
 - Keep server data and cart state separate.
 - Do not duplicate cart business logic in components.
+- Keep admin catalog search, sorting, and pagination server-driven instead of fetching all rows into the browser.
+
+## Admin Rules
+
+- Use username/password backed by `admin_users`; do not use API-key login or JWT for the browser admin site.
+- Store admin sessions in signed HttpOnly cookies.
+- Hash passwords with Node `crypto.scrypt`; never store or log raw passwords.
+- Protect unsafe admin methods with same-origin checks because auth is cookie-based.
+- Require confirmation dialogs before admin write/logout actions; do not use browser `alert` or `confirm`.
+- Show toast feedback for admin success and failure paths.
+- Keep audit logging backend-focused unless an audit UI is explicitly requested.
 
 ## Constants Rules
 
@@ -60,6 +73,7 @@ These conventions define how BookHaven implementation and future changes should 
 - Put route labels and paths in constants where reused.
 - Put shared numeric config in constants when it affects behavior or display.
 - Do not hardcode repeated labels, empty-state copy, or error messages in components.
+- Remove stale copy constants when UI or flows are deleted.
 
 ## Testing Rules
 

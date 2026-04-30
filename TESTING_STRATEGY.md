@@ -13,7 +13,8 @@ The test suite should prove the most important behavior without becoming large o
 - Quantity updates.
 - Remove and clear behavior.
 - Key UI component rendering.
-- Book grid rendering.
+- Public catalog query helpers and API response shape.
+- Protected admin API auth, validation, CRUD, and audit behavior.
 - Empty cart state.
 - Basic accessibility-minded behavior such as accessible button names.
 
@@ -26,20 +27,21 @@ The test suite should prove the most important behavior without becoming large o
 - Next.js routing internals.
 - Trivial constants.
 - Mock-only behavior with no user or business value.
+- Admin modal pixel layout; validate with browser QA instead.
 
 ## Current Exact 11 Test Cases
 
-1. Cart store adds a new book and increments quantity for duplicate adds.
-2. Cart store removes a book by id.
+1. Cart store adds a new book and adjusts quantity.
+2. Cart store removes a book explicitly and when quantity reaches zero.
 3. Cart store calculates total item count and total price.
 4. Cart store persists cart state through localStorage.
-5. BookCard renders required book data, adds to cart, and shows feedback.
-6. Cart UI renders item quantity, summary total, and cart badge count.
-7. Loading and error states render accessible roles.
-8. Catalog search filters books by title or author.
-9. Catalog sorting handles price, title, and newest date.
-10. Catalog pagination returns the expected page slice and clamps invalid pages.
-11. Catalog search returns an empty view model when no books match.
+5. Catalog helpers normalize params and map API response view model.
+6. Public books API keeps normalized `data` and `meta`.
+7. Admin session handles failed and successful login with cookies and audit.
+8. Admin book APIs enforce auth, validation, duplicate SKU, writes, and logout audit.
+9. Loading and error states render accessible roles.
+10. BookCard renders required book data, adds to cart, and shows feedback.
+11. Cart UI renders item quantity controls, summary total, and cart badge count.
 
 ## Cart Store Tests
 
@@ -65,6 +67,7 @@ Expected coverage:
 - Book card displays required book information.
 - Cart badge and summary show the current cart state.
 - Loading and error states expose accessible status/alert roles.
+- Admin actions use route tests for auth, validation, CRUD, and audit coverage.
 
 ## Accessibility-Minded Tests
 

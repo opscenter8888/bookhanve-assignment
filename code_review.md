@@ -13,6 +13,9 @@ Use this checklist before submitting implementation work or future changes.
 - [ ] PostgreSQL database runs through Docker.
 - [ ] Seed data is sourced from JSON.
 - [ ] JSON seed data is inserted/upserted into the database by `npm run db:seed`.
+- [ ] Admin login, session, CRUD, and audit writes work through protected APIs.
+- [ ] Admin list search, sorting, and pagination are backend-driven.
+- [ ] Admin write/logout actions use confirmation dialogs and toast feedback.
 - [ ] Exactly 11 Jest tests exist and pass.
 - [ ] README explains setup, decisions, and LLM usage.
 
@@ -23,6 +26,7 @@ Use this checklist before submitting implementation work or future changes.
 - [ ] Shared UI is reusable and not feature-specific.
 - [ ] Shared types are centralized.
 - [ ] Components do not contain database concerns.
+- [ ] Admin server-only logic stays under `src/server`.
 - [ ] No unnecessary libraries or abstractions were introduced.
 
 ## Cart Behavior
@@ -42,6 +46,8 @@ Use this checklist before submitting implementation work or future changes.
 - [ ] Database credentials are not hardcoded in source code.
 - [ ] Supabase usage, if selected, is configured through `DATABASE_URL`.
 - [ ] Database failure states are handled clearly.
+- [ ] Admin secrets are sourced from environment variables, not browser code.
+- [ ] `admin_users` and `admin_audit_logs` schema changes are documented.
 
 ## UI Consistency
 
@@ -50,11 +56,14 @@ Use this checklist before submitting implementation work or future changes.
 - [ ] Reusable Button, Card, and Container components are used where appropriate.
 - [ ] Loading, error, and empty states use shared primitives.
 - [ ] User-facing strings come from constants.
+- [ ] Admin modal layout has one cancel action location and is not clipped on mobile.
+- [ ] Confirmation dialogs are custom UI, not browser alerts.
 
 ## Responsiveness
 
 - [ ] Homepage works on mobile, tablet, and desktop.
 - [ ] Cart page works on mobile, tablet, and desktop.
+- [ ] Admin dashboard works on mobile, tablet, and desktop.
 - [ ] Book grid adapts to viewport width.
 - [ ] Text does not overflow controls or cards.
 - [ ] Tap targets are usable on mobile.
@@ -82,6 +91,7 @@ Use this checklist before submitting implementation work or future changes.
 - [ ] Avoid `any` unless explicitly justified.
 - [ ] Component props are typed clearly.
 - [ ] Derived values have predictable return types.
+- [ ] Unused constants, functions, variables, and empty folders are removed.
 
 ## Performance
 
@@ -94,6 +104,7 @@ Use this checklist before submitting implementation work or future changes.
 
 - [ ] Setup steps are accurate.
 - [ ] Database steps are accurate.
+- [ ] Admin setup steps are accurate.
 - [ ] Commands are accurate.
 - [ ] Architecture decisions are explained.
 - [ ] LLM usage is disclosed.
