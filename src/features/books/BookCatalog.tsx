@@ -9,8 +9,10 @@ import { APP_COPY } from "@/constants/copy";
 import { CatalogControls } from "@/features/books/CatalogControls";
 import { CatalogPagination } from "@/features/books/CatalogPagination";
 import {
+  buildCatalogViewModelFromApiResponse,
   parseSort,
-  type CatalogApiResponse,
+  type CatalogApiErrorResponse,
+  type CatalogApiSuccessResponse,
   type CatalogViewModel
 } from "@/features/books/catalog";
 import { useCartStore } from "@/features/cart/cart-store";
@@ -20,6 +22,12 @@ type CatalogState = {
   queryString: string;
   viewModel: CatalogViewModel | null;
 };
+
+function isCatalogErrorResponse(
+  response: CatalogApiSuccessResponse | CatalogApiErrorResponse
+): response is CatalogApiErrorResponse {
+  return "error" in response;
+}
 
 export function BookCatalog() {
   const addItem = useCartStore((state) => state.addItem);
@@ -45,11 +53,18 @@ export function BookCatalog() {
           throw new Error(APP_COPY.booksErrorMessage);
         }
 
-        const data = (await response.json()) as CatalogApiResponse;
+        const data = (await response.json()) as
+          | CatalogApiSuccessResponse
+          | CatalogApiErrorResponse;
+
+        if (isCatalogErrorResponse(data)) {
+          throw new Error(data.error.message);
+        }
+
         setCatalogState({
           hasError: false,
           queryString,
-          viewModel: data.catalog
+          viewModel: buildCatalogViewModelFromApiResponse(data)
         });
       } catch {
         if (!controller.signal.aborted) {

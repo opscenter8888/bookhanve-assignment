@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { APP_COPY } from "@/constants/copy";
-import type { CatalogApiResponse, CatalogParams } from "@/features/books/catalog";
-import { getCatalog } from "@/features/books/data";
+import {
+  buildCatalogApiResponse,
+  type CatalogApiErrorResponse,
+  type CatalogParams
+} from "@/features/books/catalog";
+import { getCatalog } from "@/server/books";
 
 export const dynamic = "force-dynamic";
 
@@ -18,12 +22,18 @@ function getCatalogParams(request: NextRequest): CatalogParams {
 export async function GET(request: NextRequest) {
   try {
     const catalog = await getCatalog(getCatalogParams(request));
-    const response: CatalogApiResponse = { catalog };
 
-    return NextResponse.json(response);
+    return NextResponse.json(buildCatalogApiResponse(catalog));
   } catch {
+    const response: CatalogApiErrorResponse = {
+      error: {
+        code: "DATABASE_UNAVAILABLE",
+        message: APP_COPY.booksErrorMessage
+      }
+    };
+
     return NextResponse.json(
-      { error: APP_COPY.booksErrorMessage },
+      response,
       { status: 503 }
     );
   }

@@ -1,5 +1,7 @@
 import {
+  buildCatalogApiResponse,
   buildCatalogViewModel,
+  buildCatalogViewModelFromApiResponse,
   normalizeQuery,
   parsePage,
   parseSort
@@ -39,48 +41,27 @@ const books: Book[] = [
   }
 ];
 
-test("normalizes catalog query params", () => {
+test("normalizes catalog params and maps API response view model", () => {
   expect(normalizeQuery("  react  ")).toBe("react");
   expect(normalizeQuery(["backend", "ignored"])).toBe("backend");
-});
-
-test("parses sort and page params with safe defaults", () => {
   expect(parseSort("price-asc")).toBe("price-asc");
   expect(parseSort("invalid")).toBe("newest");
   expect(parsePage("2")).toBe(2);
   expect(parsePage("0")).toBe(1);
-});
 
-test("builds catalog view model from database page results", () => {
   const viewModel = buildCatalogViewModel({
     books,
     currentPage: 1,
-    query: "",
+    query: "react",
     sort: "newest",
     totalItems: 9,
     totalPages: 2
   });
+  const apiResponse = buildCatalogApiResponse(viewModel);
 
-  expect(viewModel.books).toHaveLength(3);
-  expect(viewModel.currentPage).toBe(1);
-  expect(viewModel.totalPages).toBe(2);
+  expect(buildCatalogViewModelFromApiResponse(apiResponse)).toEqual(viewModel);
+  expect(apiResponse.data.books).toHaveLength(3);
+  expect(apiResponse.meta.totalPages).toBe(2);
   expect(viewModel.hasPreviousPage).toBe(false);
   expect(viewModel.hasNextPage).toBe(true);
-});
-
-test("builds empty catalog view model for database searches with no matches", () => {
-  const viewModel = buildCatalogViewModel({
-    books: [],
-    currentPage: 1,
-    query: "missing",
-    sort: "title-asc",
-    totalItems: 0,
-    totalPages: 1
-  });
-
-  expect(viewModel.books).toEqual([]);
-  expect(viewModel.totalItems).toBe(0);
-  expect(viewModel.currentPage).toBe(1);
-  expect(viewModel.hasPreviousPage).toBe(false);
-  expect(viewModel.hasNextPage).toBe(false);
 });

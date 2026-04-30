@@ -8,7 +8,7 @@ import {
   type CatalogViewModel,
   type SortKey
 } from "@/features/books/catalog";
-import { query } from "@/lib/db";
+import { query } from "@/server/db";
 import type { Book } from "@/types/book";
 
 type BookRow = {

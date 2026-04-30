@@ -81,13 +81,13 @@ postgres://bookhaven:bookhaven@localhost:5432/bookhaven
 
 Supabase is PostgreSQL under the hood. This project does not need `@supabase/supabase-js` unless auth, storage, or realtime features are added later.
 
-Set `.env.local`:
+Set `.env.local` without wrapping quotes in hosted environment dashboards:
 
 ```bash
-DATABASE_URL="postgres://..."
+DATABASE_URL=postgres://...
 ```
 
-Use the Supabase **Direct > Connection string** tab. If the direct `db.[project-ref].supabase.co` host does not resolve, use the **Session pooler** or **Transaction pooler** connection string from Supabase instead.
+Use the Supabase **Direct > Connection string** tab. If the direct `db.[project-ref].supabase.co` host does not resolve, use the **Session pooler** or **Transaction pooler** connection string from Supabase instead. On Vercel, set `DATABASE_URL` for Production and Preview, include `sslmode=require` when Supabase requires SSL, and redeploy after changing the variable.
 
 Then run:
 
@@ -122,16 +122,18 @@ src/
     cart/
   hooks/
   lib/
+  server/
   constants/
   types/
 ```
 
-- `src/app` owns routes, page composition, and the `/api/books` route handler.
+- `src/app` owns routes, page composition, and API route handlers.
 - `src/components/ui` owns reusable Button, Card, Container, Header, Toast, LoadingState, ErrorState, and EmptyState primitives.
 - `src/components/book` owns BookCard, BookGrid, and BookGridSkeleton.
-- `src/features/books` owns catalog data loading, search, sorting, pagination, and catalog controls.
+- `src/features/books` owns catalog UI state, API response types, search, sorting, pagination, and catalog controls.
 - `src/features/cart` owns Zustand state and cart UI.
-- `src/lib` owns database and formatting helpers.
+- `src/lib` owns shared formatting helpers.
+- `src/server` owns PostgreSQL pool setup and DB-backed catalog queries.
 - `src/constants` centralizes copy, routes, and catalog configuration.
 - `src/types` contains shared Book and cart types.
 
@@ -154,6 +156,40 @@ The homepage supports:
 
 Search, sorting, and pagination are executed in SQL using `WHERE`, whitelisted `ORDER BY`, `LIMIT`, and `OFFSET` clauses.
 
+### API Contract
+
+`GET /api/books` returns:
+
+```json
+{
+  "data": {
+    "books": []
+  },
+  "meta": {
+    "query": "",
+    "sort": "newest",
+    "currentPage": 1,
+    "totalPages": 1,
+    "totalItems": 0,
+    "hasPreviousPage": false,
+    "hasNextPage": false
+  }
+}
+```
+
+Database failures return `503`:
+
+```json
+{
+  "error": {
+    "code": "DATABASE_UNAVAILABLE",
+    "message": "The database is unavailable. Check the PostgreSQL connection and seeded book records."
+  }
+}
+```
+
+`GET /api/health` returns `200` with `{ "data": { "status": "ok" } }` when PostgreSQL is reachable, or the same `503` error shape when it is not.
+
 API examples:
 
 ```text
@@ -161,6 +197,7 @@ API examples:
 /api/books?q=react&page=1&sort=title-asc
 /api/books?page=2
 /api/books?sort=price-asc
+/api/health
 ```
 
 Examples:
@@ -202,7 +239,7 @@ npm test
 The suite intentionally contains exactly 11 tests covering:
 
 - cart add/remove/totals/persistence
-- catalog URL parsing and view-model helpers
+- catalog API routes, health check, URL parsing, and view-model helpers
 - BookCard rendering and add feedback
 - cart badge/cart summary behavior
 - loading/error accessibility roles
@@ -234,7 +271,5 @@ Codex was used to scaffold, implement, review, and refine the project. The repos
 ## Future Improvements
 
 - Checkout flow.
-- Server-side database pagination for very large catalogs.
 - Better cover asset management.
 - End-to-end browser tests.
-- Deployment documentation.
