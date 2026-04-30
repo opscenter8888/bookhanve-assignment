@@ -1,0 +1,27 @@
+# Conservative Codex defaults for the planned BookHaven project.
+# The application is implemented; keep changes aligned with the guidance files.
+
+model = "MODEL_PLACEHOLDER"
+reasoning_effort = "medium"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[profiles.bookhaven]
+model = "MODEL_PLACEHOLDER"
+reasoning_effort = "medium"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[profiles.bookhaven.project]
+name = "BookHaven"
+type = "coding-test"
+status = "implemented"
+guidance_files = [
+  "AGENTS.md",
+  "PLANS.md",
+  "CONVENTIONS.md",
+  "DEFINITION_OF_DONE.md",
+  "ARCHITECTURE.md",
+  "TESTING_STRATEGY.md",
+  "code_review.md",
+]

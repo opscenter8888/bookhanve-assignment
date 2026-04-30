@@ -1,0 +1,202 @@
+[
+  {
+    "id": "bk-atomic-habits",
+    "sku": "BKH-1001",
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "description": "A practical guide to building better habits through small, consistent changes.",
+    "priceCents": 1899,
+    "coverImageUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-03-22T09:00:00.000Z"
+  },
+  {
+    "id": "bk-clean-code",
+    "sku": "BKH-1002",
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "description": "A software craftsmanship classic focused on readable, maintainable code.",
+    "priceCents": 3299,
+    "coverImageUrl": "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-03-18T09:00:00.000Z"
+  },
+  {
+    "id": "bk-designing-data",
+    "sku": "BKH-1003",
+    "title": "Designing Data-Intensive Applications",
+    "author": "Martin Kleppmann",
+    "description": "A deep look at reliable, scalable, and maintainable data systems.",
+    "priceCents": 4499,
+    "coverImageUrl": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-03-12T09:00:00.000Z"
+  },
+  {
+    "id": "bk-pragmatic-programmer",
+    "sku": "BKH-1004",
+    "title": "The Pragmatic Programmer",
+    "author": "David Thomas and Andrew Hunt",
+    "description": "Timeless engineering advice for deliberate, adaptable software delivery.",
+    "priceCents": 2799,
+    "coverImageUrl": "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-03-08T09:00:00.000Z"
+  },
+  {
+    "id": "bk-refactoring",
+    "sku": "BKH-1005",
+    "title": "Refactoring",
+    "author": "Martin Fowler",
+    "description": "Techniques for improving code structure without changing observable behavior.",
+    "priceCents": 3999,
+    "coverImageUrl": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-03-02T09:00:00.000Z"
+  },
+  {
+    "id": "bk-system-design",
+    "sku": "BKH-1006",
+    "title": "System Design Interview",
+    "author": "Alex Xu",
+    "description": "A practical survey of scalable architecture patterns and tradeoffs.",
+    "priceCents": 2499,
+    "coverImageUrl": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-02-24T09:00:00.000Z"
+  },
+  {
+    "id": "bk-you-dont-know-js",
+    "sku": "BKH-1007",
+    "title": "You Don't Know JS Yet",
+    "author": "Kyle Simpson",
+    "description": "A precise exploration of JavaScript mechanics for serious frontend engineers.",
+    "priceCents": 2299,
+    "coverImageUrl": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-02-18T09:00:00.000Z"
+  },
+  {
+    "id": "bk-react-patterns",
+    "sku": "BKH-1008",
+    "title": "React Design Patterns",
+    "author": "Michele Bertoli",
+    "description": "Reusable patterns for building maintainable React applications.",
+    "priceCents": 2699,
+    "coverImageUrl": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-02-12T09:00:00.000Z"
+  },
+  {
+    "id": "bk-effective-typescript",
+    "sku": "BKH-1009",
+    "title": "Effective TypeScript",
+    "author": "Dan Vanderkam",
+    "description": "Practical guidance for writing safer and more expressive TypeScript.",
+    "priceCents": 3499,
+    "coverImageUrl": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-02-06T09:00:00.000Z"
+  },
+  {
+    "id": "bk-domain-driven-design",
+    "sku": "BKH-1010",
+    "title": "Domain-Driven Design",
+    "author": "Eric Evans",
+    "description": "A foundational book on modeling complex business domains in software.",
+    "priceCents": 4299,
+    "coverImageUrl": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-01-30T09:00:00.000Z"
+  },
+  {
+    "id": "bk-building-microservices",
+    "sku": "BKH-1011",
+    "title": "Building Microservices",
+    "author": "Sam Newman",
+    "description": "A pragmatic guide to designing, deploying, and operating microservices.",
+    "priceCents": 3199,
+    "coverImageUrl": "https://images.unsplash.com/photo-1526243741027-444d633d7365?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-01-24T09:00:00.000Z"
+  },
+  {
+    "id": "bk-staff-engineer",
+    "sku": "BKH-1012",
+    "title": "Staff Engineer",
+    "author": "Will Larson",
+    "description": "Stories and frameworks for technical leadership beyond senior engineering.",
+    "priceCents": 2399,
+    "coverImageUrl": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-01-18T09:00:00.000Z"
+  },
+  {
+    "id": "bk-engineering-management",
+    "sku": "BKH-1013",
+    "title": "An Elegant Puzzle",
+    "author": "Will Larson",
+    "description": "Systems thinking for engineering management and organizational design.",
+    "priceCents": 2599,
+    "coverImageUrl": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-01-12T09:00:00.000Z"
+  },
+  {
+    "id": "bk-shape-up",
+    "sku": "BKH-1014",
+    "title": "Shape Up",
+    "author": "Ryan Singer",
+    "description": "A product development method for shaping, betting, and building focused work.",
+    "priceCents": 1799,
+    "coverImageUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2026-01-06T09:00:00.000Z"
+  },
+  {
+    "id": "bk-inspired",
+    "sku": "BKH-1015",
+    "title": "Inspired",
+    "author": "Marty Cagan",
+    "description": "How strong product teams discover and deliver valuable technology products.",
+    "priceCents": 2899,
+    "coverImageUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2025-12-28T09:00:00.000Z"
+  },
+  {
+    "id": "bk-lean-startup",
+    "sku": "BKH-1016",
+    "title": "The Lean Startup",
+    "author": "Eric Ries",
+    "description": "A method for testing product ideas quickly and learning from customers.",
+    "priceCents": 1999,
+    "coverImageUrl": "https://images.unsplash.com/photo-1511108690759-009324a90311?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2025-12-20T09:00:00.000Z"
+  },
+  {
+    "id": "bk-deep-work",
+    "sku": "BKH-1017",
+    "title": "Deep Work",
+    "author": "Cal Newport",
+    "description": "A guide to focused work and protecting attention in demanding careers.",
+    "priceCents": 1699,
+    "coverImageUrl": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2025-12-14T09:00:00.000Z"
+  },
+  {
+    "id": "bk-four-thousand-weeks",
+    "sku": "BKH-1018",
+    "title": "Four Thousand Weeks",
+    "author": "Oliver Burkeman",
+    "description": "A thoughtful approach to time, limits, and choosing meaningful work.",
+    "priceCents": 1799,
+    "coverImageUrl": "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2025-12-08T09:00:00.000Z"
+  },
+  {
+    "id": "bk-thinking-fast-slow",
+    "sku": "BKH-1019",
+    "title": "Thinking, Fast and Slow",
+    "author": "Daniel Kahneman",
+    "description": "A landmark explanation of human judgment, bias, and decision-making.",
+    "priceCents": 2199,
+    "coverImageUrl": "https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2025-12-02T09:00:00.000Z"
+  },
+  {
+    "id": "bk-make-it-stick",
+    "sku": "BKH-1020",
+    "title": "Make It Stick",
+    "author": "Peter C. Brown",
+    "description": "Research-backed learning strategies for retaining knowledge that matters.",
+    "priceCents": 1599,
+    "coverImageUrl": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=900&q=80",
+    "createdAt": "2025-11-26T09:00:00.000Z"
+  }
+]

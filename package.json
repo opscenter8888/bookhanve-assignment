@@ -1,0 +1,52 @@
+{
+  "name": "bookhaven",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "jest",
+    "db:schema": "node database/schema.js",
+    "db:seed": "node database/seed/seed.js"
+  },
+  "dependencies": {
+    "next": "16.2.4",
+    "pg": "8.13.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zustand": "5.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
+    "@testing-library/user-event": "14.5.2",
+    "@typescript-eslint/parser": "8.46.2",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.10.2",
+    "@types/pg": "8.11.10",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "autoprefixer": "10.4.20",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.4",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.16",
+    "typescript": "5.7.2"
+  },
+  "overrides": {
+    "@typescript-eslint/eslint-plugin": "8.46.2",
+    "@typescript-eslint/parser": "8.46.2",
+    "@typescript-eslint/project-service": "8.46.2",
+    "@typescript-eslint/scope-manager": "8.46.2",
+    "@typescript-eslint/tsconfig-utils": "8.46.2",
+    "@typescript-eslint/type-utils": "8.46.2",
+    "@typescript-eslint/types": "8.46.2",
+    "@typescript-eslint/typescript-estree": "8.46.2",
+    "@typescript-eslint/utils": "8.46.2",
+    "@typescript-eslint/visitor-keys": "8.46.2",
+    "typescript-eslint": "8.46.2"
+  }
+}

@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: bookhaven-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bookhaven
+      POSTGRES_USER: bookhaven
+      POSTGRES_PASSWORD: bookhaven
+    ports:
+      - "5432:5432"
+    volumes:
+      - bookhaven-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  bookhaven-postgres-data:
